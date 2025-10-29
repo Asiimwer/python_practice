@@ -40,12 +40,11 @@ class Person():
         print(f"My name is {self.names} I am a {self.status}")
 
 class Administrator():
-    def check_student(self):
+    def check_student(self,student_number):
         conn = sqlite3.connect('student_portal.db')
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM student")
         all_students = [ x[0] for x in cursor.fetchall()]
-        student_number = input("Input student number : ")
         if student_number in all_students:
             cursor.execute("SELECT *FROM student WHERE student_no = ?",(student_number,))
             student_info = cursor.fetchone()
@@ -85,26 +84,37 @@ class Administrator():
     def assign_grade(self):
         conn = sqlite3.connect("student_portal.db")
         cursor = conn.cursor()
+
         student_no = input("Enter Student number : ")
-        student_search = self.check_student(student_no)
-        if student_search :
-            student_search = cursor.execute("SELECT * FROM student WHERE student_no = ?", (student_no,))
-            names,gender,dob,campus,status,s_class,course_1,course_2,c1_grade,c2_grade = student_search
-            print(f"\n Names : {names} \n Gender : {gender} \n  Dob : {dob} \n campus : {campus} \n Status : {status} \n Class : {s_class} \n Course 1 : {course_1} \n Grade : {c1_grade} \n  Course 2 : {course_2} \n Grade : {c2_grade}")
+        student_search = self.check_student(student_no)  # I assume this returns True/False
+
+        if student_search:
+            cursor.execute("SELECT * FROM student WHERE student_no = ?", (student_no,))
+            student_search = cursor.fetchone()
+
+            if student_search is None:
+                print("Student not found in DB!")
+                conn.close()
+                return
+
+            student_no, names, gender, dob, campus, status, s_class, course_1, c1_grade, course_2, c2_grade = student_search
+
+            print(f"\n Names : {names} \n Gender : {gender} \n Dob : {dob} \n Campus : {campus} \n Status : {status} \n Class : {s_class} \n Course 1 : {course_1} \n Grade : {c1_grade} \n Course 2 : {course_2} \n Grade : {c2_grade}")
+
             assign_grade = int(input(f"Assign grade for {course_1} / {course_2} (1/2) : "))
-            if assign_grade==1:
-                new_grade=input(f"Assign grade for {course_1} :")
-                cursor.execute('''
-                        UPDATE student
-                        SET c1_grade = ?
-                        WHERE student_no = ?''', (new_grade,student_no))
+            new_grade = input(f"Assign grade : ")
+
+            if assign_grade == 1:
+                cursor.execute("UPDATE student SET c1_grades = ? WHERE student_no = ?", (new_grade, student_no))
+                print(f"Grade changed to {new_grade}")
             elif assign_grade == 2:
-                cursor.execute('''
-                            UPDATE student
-                               SET c2_grade = ?
-                               WHERE student_no = ? ''', (new_grade,student_no))
+                cursor.execute("UPDATE student SET c2_grades = ? WHERE student_no = ?", (new_grade, student_no))
+                print(f"Grade changed to {new_grade}")
+            print(f"\n Names : {names} \n Gender : {gender} \n Dob : {dob} \n Campus : {campus} \n Status : {status} \n Class : {s_class} \n Course 1 : {course_1} \n Grade : {c1_grade} \n Course 2 : {course_2} \n Grade : {c2_grade}")
+
         conn.commit()
         conn.close()
+
 
     def generate_report(self):
         conn = sqlite3.connect("student_portal.db")
@@ -115,9 +125,10 @@ class Administrator():
         if student_search:
             generate_report = int(input("Insert '1' to generate report. Insert '2' to cancel : "))
             if generate_report == 1:
-                student_search = cursor.execute("SELECT * FROM student WHERE student_no = ?", (student_no,))
-                names,gender,dob,campus,status,s_class,course_1,course_2,c1_grade,c2_grade = student_search
-                print(f"\n Names : {names} \n Gender : {gender} \n  Dob : {dob} \n campus : {campus} \n Status : {status} \n Class : {s_class} \n Course 1 : {course_1} \n Grade : {c1_grade} \n  Course 2 : {course_2} \n Grade : {c2_grade}")
+                cursor.execute("SELECT * FROM student WHERE student_no = ?", (student_no,))
+                student_search = cursor.fetchone()
+                student_no,names,gender,dob,campus,status,s_class,course_1,course_2,c1_grade,c2_grade = student_search
+                print(f"\n Student Number : {student_no} \n Names : {names} \n Gender : {gender} \n  Dob : {dob} \n campus : {campus} \n Status : {status} \n Class : {s_class} \n Course 1 : {course_1} \n Grade : {c1_grade} \n  Course 2 : {course_2} \n Grade : {c2_grade}")
         conn.commit()
         conn.close()
     def generate_student_no(self):
