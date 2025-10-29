@@ -1,12 +1,14 @@
 import sqlite3
 
 def create_table():
-    conn = sqlite3.connect('portal.db')
+    conn = sqlite3.connect('university_portal.db')
     cursor = conn.cursor()
     cursor.execute('''
 
-        CREATE TABLE IF NOT EXISTS user(student_name TEXT NOT NULL,
-                   student_age INTEGER NOT NULL,
+        CREATE TABLE IF NOT EXISTS user(student_number AUTO INCREMENT,
+                   student_name TEXT NOT NULL,
+                   student_course TEXT NOT NULL,
+                   student_faculty TEXT NOT NULL,
                    student_class TEXT NOT NULL)
 
                     ''')
@@ -66,7 +68,7 @@ def retrieve_info():
         print(f"\n Name :{name} \n Age : {age} \n Class : {grade}")
     conn.close()
 
-retrieve_info()
+# retrieve_info()
 
 def update_user(name_input,new_st_age = None, new_st_grade = None):
     conn = sqlite3.connect('portal.db')
@@ -89,7 +91,7 @@ def update_user(name_input,new_st_age = None, new_st_grade = None):
     conn.commit()
     conn.close()
     print(f"Student {name_input} has successfully been updated")
-    retrieve_info()
+    # retrieve_info()
     
 print("Do you want to update student  (1/2) ?")
 def update_info():
