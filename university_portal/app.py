@@ -25,6 +25,16 @@ cursor.execute('''
                staff_department TEXT NOT NULL,
                staff_student_lists TEXT)
                ''')
+
+cursor.execute('''
+        CREATE TABLE IF NOT EXISTS admin(admin_no TEXT PRIMARY KEY,
+               admin_name TEXT NOT NULL,
+               admin_gender TEXT NOT NULL,
+               admin_campus TEXT NOT NULL,
+               admin_status TEXT NOT NULL,
+               admin_password TEXT NOT NULL)
+               ''')
+
 conn.commit()
 conn.close()
 
@@ -194,7 +204,31 @@ class Administrator():
             self.register_lecturer()
         else:
             print("Enter enter correct option")   
-        
+       
+
+class Admin(Person):
+    def __init__(self, admin_no, names, gender, campus, status,password):
+        self.password= password
+        self.admin_no = admin_no
+        super().__init__(names, gender,campus, status)
+    def add_admin(self):
+        conn = sqlite3.connect('student_portal.db')
+        cursor = conn.cursor()
+        cursor.execute('''
+                INSERT OR REPLACE INTO admin(admin_name,admin_gender,admin_campus,admin_status,admin_password)
+                     VALUES(?,?,?,?,?,?)''' , (self.admin_no,self.names,self.gender,self.campus,self.status,self.password))
+        conn.commit()
+        conn.close()
+        admin_no = input("Enter admin number : ")
+        admin_names = input("Enter name : ")
+        admin_gender = input("Input gender : ")
+        admin_campus = input("Enter campus : ")
+        admin_status = input("Input status")
+        admin_password = input("Input Admin Password : ")
+
+    def verification(self):
+        print("Enter '1' to ")
+
 class Student(Person):
     def __init__(self,student_no,names, gender, dob, campus, status,student_class,course_1,c1_grade = None,course_2=None,c2_grade=None):
         self.student_no = student_no
