@@ -168,7 +168,7 @@ class Administrator():
         st_c1_grade =input("Enter student Course 1 Grade : ")
         st_course_2=input("Enter student Course 2 : ")
         st_c2_grade=input("Enter student Course 2 Grade : ")
-        student_no = self.generate_student_no()
+        student_no = self.generate_student_no() 
         new_student = Student(student_no,st_names,st_gender,st_dob,st_campus,st_status,st_class,st_course_1,st_c1_grade,st_course_2,st_c2_grade)
         new_student.student_to_db()
         print("Student Registered !!")
