@@ -27,6 +27,12 @@ def save_to_db():
                 duties TEXT NOT NULL,
                 FOREIGN KEY (person_id) REFERENCES resident(identity_number))
         ''')
+    cursor.execute('''
+         CREATE TABLE IF NOT EXISTS admins(admin_id TEXT NOT NULL,
+                   admin_password TEXT NOT NULL,
+                   admin_role TEXT NOT NULL,
+                   clearance_level TEXT NOT NULL)
+        ''')
     conn.commit()
     conn.close()
 class Person():
@@ -37,7 +43,7 @@ class Person():
         self.dob = dob
         self.address = address
     def display_info(self):
-        print(f"\n ID :{self.id} \n Names : {self.names} \n Gneder : {self.gender} \n DOB : {self.dob} \n Address : {self.address} ")
+        print(f"\n ID :{self.r_id} \n Names : {self.names} \n Gneder : {self.gender} \n DOB : {self.dob} \n Address : {self.address} ")
 class Resident(Person):
     def __init__(self, r_id, names, gender, dob, address,marriage_stats,children = None,crime_hist = None):
         self.children = children
@@ -48,8 +54,8 @@ class Resident(Person):
         super().__init__(r_id, names, gender, dob, address)
     def display_info(self):
         super().display_info() 
-        print(f"\n Children : {self.children} \n Criminal History : {self.crime_history}")
-    def input_resident(cls):
+        print(f" Children : {self.children} \n Criminal History : {self.crime_history}")
+    def input_resident(self):
         resident_id = input("Enter ID : ")
         names = input("Enter Names : ")
         gender = input("Enter gender : ")
@@ -58,41 +64,45 @@ class Resident(Person):
         marriage_stats = input("Enter marriage status : ")
         children = input("Enter Children : ")
         crime_hist = input("Enter criminal history : ")
-        resident = cls(resident_id,names,gender,dob,address,marriage_stats,children,crime_hist)
+        resident = Resident(resident_id,names,gender,dob,address,marriage_stats,children,crime_hist)
         conn = sqlite3.connect("ham_palm_city.db")
         cursor = conn.cursor()
-        cursor.execute(''''
-                INSERT INTO resident(identity_id,names,gender,address,dob,marriage_status,children,criminal_history)
-                    VALUES(?,?,?,?,?,?,?,?) ''', (self.r_id,self.names,self.gender,self.address,self.dob,self.marriage_status,self.children,self.crime_hist))
+        cursor.execute('''
+                INSERT INTO resident(identity_id,names,gender,address,dob,marriage_status,children,criminal_hsitory)
+                    VALUES(?,?,?,?,?,?,?,?) ''', (resident.r_id,resident.names,resident.gender,resident.address,resident.dob,resident.marriage_status,resident.children,resident.crime_hist))           
         conn.commit()
         conn.close()
         resident.display_info()
 class Worker():
-    def __init__(self, id, occupation,employer,education_history,salary,taxes):
+    def __init__(self, id, occupation,employer,work_history,education_history,salary,taxes):
         self.id = id
         self.occupation = occupation
         self.employer = employer
         self.education_history = education_history
         self.salary = salary
         self.taxes = taxes
-    def display_info(self) :
-        print(f"\n ID : {self.id} \n Occupation : {self.occupation} \n Employer : {self.employer} \n Salary : {self.salary} \n Taxes : {self.taxes}")
+        self.work_hist = work_history
+    def save_worker(self) :
         resident_id = input("Input ID : ")
         occupation = input("Enter occupation : ")
         employer = input("Enter employer : ")
         edu_hist = input("Enter qualifications : ")
         salary = int(input("Enter salary : "))
-        taxes = 35/100*salary
-        worker=Worker(resident_id,occupation,employer,edu_hist,salary,taxes)
+        work_hist = input("Work history : ")
+        taxes = 35/100
+        worker =Worker(resident_id,occupation,employer,edu_hist,work_hist,salary,taxes)
         conn = sqlite3.connect("ham_palm_city.db")
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO worker(person_id,job,employer,education,work_history,salary,tax)
-                       VALUES(?,?,?,?,?,?,?) ''', (self.id,self.occupation,self.employer,self.education_history,self.salary,self.taxes))
+            INSERT INTO workers(person_id,job,employer,education,work_history,salary,tax)
+                       VALUES(?,?,?,?,?,?,?) ''', (worker.id,worker.occupation,worker.employer,worker.education_history,worker.work_hist,worker.salary,worker.taxes))
+        print(f"\n ID : {worker.id} \n Occupation : {worker.occupation} \n Employer : {worker.employer} \n Qualifications : {worker.education_history} \n Work History : {worker.work_hist} Salary : {worker.salary} \n Taxes : {worker.taxes} \n WOrk History : {worker.work_hist}")
         conn.commit()
         conn.close()
-        worker.display_info()
-class Mayor():
+    def new_job(self):
+        print("Admin! to workers dashboard")
+
+class Mayor(Worker):
     def __init__(self,id,duties):
         self.id = id
         self.duties = duties
@@ -100,16 +110,41 @@ class Mayor():
     def save_mayor(self):
         resident_id = input("Enter resident_id : ")
         duties = input("Input the number of duties : ")
-        Mayor(resident_id,duties)
+        mayor = Mayor(resident_id,duties)
         conn = sqlite3.connect("ham_palm_city.db")
         cursor = conn.cursor()
         cursor.execute('''
             INSERT INTO mayor(person_id,duties)
-                VALUES(?,?) ''', (self.id,self.duties))
+                VALUES(?,?) ''', (mayor.id,mayor.duties))
         conn.commit()
         conn.close()
+        
         # ADD A WAY TO INCRESE EVERYTIME THEY PUT DUTIES
-
+class Admin():
+    def __init__(self,a_id,a_role,a_cl,a_password):
+        self.a_id = a_id
+        self.a_role = a_role
+        self.cl = a_cl
+        self.a_password = a_password
+    def create_admin(self) :
+        admin_id = input("Input ID : ")
+        admin_role = input("Enter Admin role : ")
+        clearence_level = input("Enter clearence_level : ")
+        password = input("Enter password : ")
+        my_admin = Admin(admin_id,admin_role,clearence_level,password)
+        conn = sqlite3.connect("ham_palm_city.db")
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO admins(admin_id,admin_role,clearance_level,admin_password)
+                       VALUES(?,?,?,?) ''', (my_admin.a_id,my_admin.a_role,my_admin.cl,my_admin.a_password))
+        print(f"\n ID : {my_admin. a_id} \n Role : {my_admin.a_role} \n Clearance Level : {my_admin.cl} \n Password : {my_admin.a_password}")
+        conn.commit()
+        conn.close()
+    def admin_operator(self):
+      self.admin_operator()
+      if add:
+          print("Admin created ")
+    admin_operator()
 def my_operator():
         # print("Enter '1' to check resident")
         print("Enter '1' to register Resident")
@@ -120,14 +155,24 @@ def my_operator():
         # print("Enter '6' to add admin")
         user_input = int(input("Enter option : "))
         if user_input == 1:
-            resident = Resident()
-            resident.input_resident()
+            # Why does this None thing work 
+            resident = Resident(None,None,None,None,None,None,None,None)
+            save = resident.input_resident()
+            if save:
+                print("Woker saved")
         elif user_input == 2:
-             Worker.save_worker
+             worker = Worker(None,None,None,None,None,None,None)
+             worker.save_worker()
         elif user_input == 3:
-           Mayor.save_mayor()
+           mayor = Mayor(None,None)
+           save = mayor.save_mayor()
+           if mayor:
+               print("Mayor saved")
         else:
             print("Wrong Input") 
-my_operator()      
+
+
+
+
 if __name__ == "__main__":
     save_to_db()
