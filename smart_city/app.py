@@ -120,12 +120,22 @@ class Mayor(Worker):
         conn.close()
         
         # ADD A WAY TO INCRESE EVERYTIME THEY PUT DUTIES
-class Admin():
+class Admin:
     def __init__(self,a_id,a_role,a_cl,a_password):
         self.a_id = a_id
         self.a_role = a_role
         self.cl = a_cl
         self.a_password = a_password
+    def check_account(self):
+        a_id = input("Input admin ID : ")
+        conn = sqlite3.connect("ham_palm_city.db")
+        cursor = conn.cursor()
+        
+        cursor.execute("SELECT * FROM admins")
+        admins_db = [ x[0] for x in cursor.fetchall()]
+        if a_id in admins_db:
+            print("User Found !")
+
     def create_admin(self) :
         admin_id = input("Input ID : ")
         admin_role = input("Enter Admin role : ")
@@ -140,11 +150,8 @@ class Admin():
         print(f"\n ID : {my_admin. a_id} \n Role : {my_admin.a_role} \n Clearance Level : {my_admin.cl} \n Password : {my_admin.a_password}")
         conn.commit()
         conn.close()
-    def admin_operator(self):
-      self.admin_operator()
-      if add:
-          print("Admin created ")
-    admin_operator()
+    
+    
 def my_operator():
         # print("Enter '1' to check resident")
         print("Enter '1' to register Resident")
@@ -172,7 +179,12 @@ def my_operator():
             print("Wrong Input") 
 
 
-
+def admin_operator():
+       add = Admin(None,None,None,None)
+       add.create_admin()
+       if add:
+          print("Admin created ")
+admin_operator()
 
 if __name__ == "__main__":
     save_to_db()
