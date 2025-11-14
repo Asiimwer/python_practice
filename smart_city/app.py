@@ -55,8 +55,24 @@ class Resident(Person):
     def display_info(self):
         super().display_info() 
         print(f" Children : {self.children} \n Criminal History : {self.crime_history}")
+    def check_resident(self,r_id):
+        conn = sqlite3.connect("ham_palm_city.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM resident")
+        all_residents = [ x[0] for x in cursor.fetchall()]
+        if r_id in all_residents:
+            print("User found")
+            view = input("Do you want to view data ? (Y/N) : " )
+            if view.lower() == "y":
+                my_resident = cursor.execute("SELECT * FROM resident WHERE identity_id = ?",(r_id,))
+                my_resident = cursor.fetchone()
+                r_id,names,gender,address,dob,marriage_status,children,criminal_history = my_resident
+                print(f"\n ID : {r_id} \n Names : {names} \n Gender : {gender} \n Address : {address} \n dob: {dob} \n Marriage Status : {marriage_status} \n Children : {children} \n Criminal History: {criminal_history}")
+        conn.close()
+    
     def input_resident(self):
         resident_id = input("Enter ID : ")
+        self.check_resident(resident_id)
         names = input("Enter Names : ")
         gender = input("Enter gender : ")
         dob = input("Enter DOB : ")
@@ -82,8 +98,25 @@ class Worker():
         self.salary = salary
         self.taxes = taxes
         self.work_hist = work_history
+    def check_worker(self,r_id):
+        conn = sqlite3.connect("ham_palm_city.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM workers")
+        all_workers = [ x[0] for x in cursor.fetchall()]
+        if r_id in all_workers:
+            print("User exists")
+            view = input("Do you want to view data ? (Y/N) : " )
+            if view.lower() == "y":
+                my_worker = cursor.execute("SELECT * FROM workers WHERE person_id = ?",(r_id,))
+                my_worker = cursor.fetchone()
+                w_id,job,employer,qualifications,work_hist,salary,taxes = my_worker
+                print("Worker details : ")
+                print(f"\n ID : {w_id} \n  \nJob : {job} \n  \nEmployer : {employer} \n  \nQualifications : {qualifications} \n \n Work History : {work_hist}  \n\n Salary : {salary} \n \n My taxes : {taxes} \n \n")
+        conn.close()
     def save_worker(self) :
         resident_id = input("Input ID : ")
+        self.check_worker(resident_id)
+        
         occupation = input("Enter occupation : ")
         employer = input("Enter employer : ")
         edu_hist = input("Enter qualifications : ")
@@ -126,18 +159,24 @@ class Admin:
         self.a_role = a_role
         self.cl = a_cl
         self.a_password = a_password
-    def check_account(self):
-        a_id = input("Input admin ID : ")
+    def check_admin(self,a_id):
+        # a_id = input("Input admin ID : ")
         conn = sqlite3.connect("ham_palm_city.db")
         cursor = conn.cursor()
-        
+
         cursor.execute("SELECT * FROM admins")
         admins_db = [ x[0] for x in cursor.fetchall()]
         if a_id in admins_db:
             print("User Found !")
-
+        else:
+            print("User not found")
     def create_admin(self) :
         admin_id = input("Input ID : ")
+        admin_check = self.check_admin(admin_id)
+        # while :
+        #     print("ID alread exists !!")
+        #     admin_id = input("Input ID : ")
+        #     break
         admin_role = input("Enter Admin role : ")
         clearence_level = input("Enter clearence_level : ")
         password = input("Enter password : ")
@@ -157,7 +196,7 @@ def my_operator():
         print("Enter '1' to register Resident")
         print("Enter '2' to register Worker")
         print("Enter '3' to register Mayor")
-        # print("Enter '4' to register student ")
+        print("Enter '4' to register Admin ")
         # print("Enter '5' to  register lecturer ")
         # print("Enter '6' to add admin")
         user_input = int(input("Enter option : "))
@@ -175,16 +214,51 @@ def my_operator():
            save = mayor.save_mayor()
            if mayor:
                print("Mayor saved")
+        elif user_input ==4:
+             add = Admin(None,None,None,None) 
+             add.create_admin()
+             if add:
+               print("Admin created ")
+        else:
+            print("Wrong Input") 
+my_operator()
+
+def admin_operator():
+    # print("Enter '1' to check resident")
+        print("Enter '1' to register Resident")
+        print("Enter '2' to register Worker")
+        print("Enter '3' to register Mayor")
+        print("Enter '4' to check admin ")
+        # print("Enter '5' to  register lecturer ")
+        # print("Enter '6' to add admin")
+        user_input = int(input("Enter option : "))
+        if user_input == 1:
+            # Why does this None thing work 
+            resident = Resident(None,None,None,None,None,None,None,None)
+            save = resident.input_resident()
+            if save:
+                print("Woker saved")
+        elif user_input == 2:
+             worker = Worker(None,None,None,None,None,None,None)
+             worker.save_worker()
+        elif user_input == 3:
+           mayor = Mayor(None,None)
+           save = mayor.save_mayor()
+           if mayor:
+               print("Mayor saved")
+        elif user_input ==3:
+             add = Admin(None,None,None,None) 
+             add.create_admin()
+             if add:
+               print("Admin created ")
+        elif user_input ==4:
+            admin = Admin()
+            admin.check_admin()
         else:
             print("Wrong Input") 
 
 
-def admin_operator():
-       add = Admin(None,None,None,None)
-       add.create_admin()
-       if add:
-          print("Admin created ")
-admin_operator()
+       
 
 if __name__ == "__main__":
     save_to_db()
