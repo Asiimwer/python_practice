@@ -197,7 +197,7 @@ def my_operator():
         print("Enter '2' to register Worker")
         print("Enter '3' to register Mayor")
         print("Enter '4' to register Admin ")
-        # print("Enter '5' to  register lecturer ")
+        print("Enter '5' to  view all data ")
         # print("Enter '6' to add admin")
         user_input = int(input("Enter option : "))
         if user_input == 1:
@@ -219,7 +219,19 @@ def my_operator():
              add.create_admin()
              if add:
                print("Admin created ")
+        elif user_input == 5:
+            # id = input("Input ID to view full details : ")
+            conn = sqlite3.connect("ham_palm_city.db")
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM resident LEFT JOIN workers ON workers.person_id= resident.identity_id")
+            all_data =cursor.fetchmany()
+            a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p = all_data
+            for item in all_data:
+                 print(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p)
+# FINISH UP MY UNPACKING
+            print(all_data)
         else:
+
             print("Wrong Input") 
 my_operator()
 
