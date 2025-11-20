@@ -33,14 +33,14 @@
         </div>
 
         <div class="table-container">
-            <form action="/student_results" method="post">
+            <form >
                 <table class="table table-striped table-hover" id="studentTable">
                     <thead class="table-dark">
                         <tr>
                             <th>ID</th>
                             <th>NameS</th>
                             <th>Gender</th>
-                            <th>DOB</th>
+                            <!-- <th>DOB</th>
                             <th>Campus</th>
                             <th>Status</th>
                             <th>Year</th>
@@ -48,25 +48,26 @@
                             <th>Grade</th>
                             <th>Course 2</th>
                             <th>Grade</th>  
-                            <th>Action</th>
+                            <th>Action</th> -->
 
                         </tr>
                     </thead>
                     <tbody>
-                        {{% for student in all_data%}}
+                        {% for student in student_info%}
                         <tr>
                             <td>{{student[0]}}</td>
                             <td>{{student[1]}}</td>
                             <td>{{student[2]}}</td>
-                            <td>{{student[3]}}</td>
+                            <!-- <td>{{student[3]}}</td>
                             <td>{{student[4]}}</td>
                             <td>{{student[5]}}</td>
                             <td>{{student[6]}}</td>
                             <td>{{student[7]}}</td>
                             <td>{{student[8]}}</td>
                             <td>{{student[9]}}</td>
-                            <td>{{student[10]}}</td>
-                        {{%endfor%}}
+                            <td>{{student[10]}}</td> -->
+                        {%endfor%}
+                        
                             <td>
                                 <button class="btn btn-success btn-sm">View</button>     
                                 <button class="btn btn-primary btn-sm">Edit</button>
